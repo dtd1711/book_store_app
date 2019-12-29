@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'package:provider/provider.dart';
+import './cart_model.dart';
+import './cart_list.dart';
 
 import './list_products.dart';
 import './book_model.dart';
@@ -31,8 +33,29 @@ class BookStoreApp extends StatelessWidget {
   final List<Book> initBook = [];
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CartModel.empty())
+      ],
+      child:  MaterialApp(
+        initialRoute: '/',
+        routes: {
+          '/': (context) => ListProductScreen(),
+          '/cart': (context) => CartList(),
+        },
+    ),
+    )
+   ;
+  }
+
+   
+}
+
+class ListProductScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    
+    return Scaffold(
         drawer: Drawer(
           child: ListView(
             children: <Widget>[
@@ -60,6 +83,17 @@ class BookStoreApp extends StatelessWidget {
         ),
         appBar: AppBar(
           title: Text('Book Store'),
+          actions: <Widget>[
+           IconButton(
+             onPressed: () {
+              Navigator.pushNamed(context, '/cart');
+             },
+             icon: Icon(
+               Icons.add_shopping_cart,
+               color: Colors.white
+             ),
+           )
+          ],
         ),
         body: FutureBuilder<List<Book>>(
           future: getBook(),
@@ -69,7 +103,6 @@ class BookStoreApp extends StatelessWidget {
             return snapshot.hasData ? ListProducts(snapshot.data) : Center(child: Text("Loading..."),);
           },
         ),
-      ),
-    );
+      );
   }
 }

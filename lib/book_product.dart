@@ -1,4 +1,6 @@
+import 'package:book_store/cart_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'book_model.dart';
 import './book_detail.dart';
@@ -10,7 +12,7 @@ class BookProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
+    var cart = Provider.of<CartModel>(context);
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => BookDetail(product)));
@@ -39,7 +41,15 @@ class BookProductWidget extends StatelessWidget {
             ),
             Flexible(
               flex: 2,
-              child: Text(product.bookPrice.toString()),
+              child: Row(
+                children: <Widget>[
+                  Text(product.bookPrice.toString()),
+                  FlatButton(
+                    onPressed:() => cart.add(product),
+                    child: cart.cartItems.contains(product) ? Icon(Icons.check,semanticLabel: "Added",) : Text("Add"),
+                  )
+                ],
+              )
             )
           ],
         ),
